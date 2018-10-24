@@ -21,12 +21,12 @@ class App extends Component {
 		return (
 			<div className="App">
 			<center>
+			<section id="size-input-section">
 			<SizeInput size={this.state.size} onSizeChange={this.handleSizeChange}/>
-			<br />
-			<hr />
-			<br />
-			<br />
+			</section>
+			<section id="grid-section">
 			<Grid size={this.state.size}/>
+			</section>
 			</center>
 			</div>
 			);
@@ -130,8 +130,8 @@ class Space extends Component {
 			backgroundColor: this.state.bgColor,
 			width: 80/this.props.size + "vw",
 			height: 70/this.props.size + "vh",
-			border: 0,
-			padding: 0,
+			border: "0px",
+			padding: "0px",
 			margin: "-0.7vh" // to remove vertical button margins
 		};
 		return (

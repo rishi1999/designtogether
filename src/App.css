@@ -17,3 +17,20 @@ input {
 button:focus {
     outline: 0;
 }
+
+#size-input-section {
+    margin: 0px;
+    border: 0px;
+    padding: 3vh 0px;
+    width: 100vw;
+    height: 7vh;
+}
+
+#grid-section {
+    margin: 0px;
+    border: 0px;
+    padding: 6vh 0px;
+    width: 100vw;
+    height: 71vh;
+    background-color: #dddddd;
+}
