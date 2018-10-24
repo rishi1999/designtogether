@@ -13,3 +13,7 @@ input {
     text-align: center;
     color: #666666;
 }
+
+button:focus {
+    outline: 0;
+}

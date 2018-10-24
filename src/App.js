@@ -103,7 +103,7 @@ class Space extends Component {
 		super(props);
 		const bg = "rgb(" + Math.floor(this.props.iValue / this.props.size * 255) + ", " + Math.floor(this.props.jValue / this.props.size * 255) + ", 0)";
 		this.state = {
-			isOn: true,
+			isOn: false,
 			bgColor: bg
 		};
 		this.handleClick = this.handleClick.bind(this);
