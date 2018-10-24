@@ -1,5 +1,12 @@
 table {
-  border-collapse: collapse;
+    border-collapse: collapse;
+}
+
+td {
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+
 }
 
 input {
@@ -14,23 +21,17 @@ input {
     color: #666666;
 }
 
-button:focus {
-    outline: 0;
-}
-
 #size-input-section {
     margin: 0px;
     border: 0px;
-    padding: 3vh 0px;
-    width: 100vw;
-    height: 7vh;
+    padding: 0px;
+    height: 10vh;
 }
 
 #grid-section {
     margin: 0px;
     border: 0px;
-    padding: 6vh 0px;
-    width: 100vw;
-    height: 71vh;
-    background-color: #dddddd;
+    padding: 5vh 0px;
+    height: 75vh;
+    background-color: #eeeeee;
 }

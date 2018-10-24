@@ -126,17 +126,12 @@ class Space extends Component {
 	}
 
 	render() {
-		const bStyle = {
+		const cStyle = {
 			backgroundColor: this.state.bgColor,
 			width: 80/this.props.size + "vw",
-			height: 70/this.props.size + "vh",
-			border: "0px",
-			padding: "0px",
-			margin: "-0.7vh" // to remove vertical button margins
+			height: 70/this.props.size + "vh"
 		};
-		return (
-			<td style={{padding: "0"}}><button style={bStyle} onMouseOver={this.handleClick}></button></td>
-			);
+		return <td style={cStyle} onMouseOver={this.handleClick}></td>;
 	}
 }
 
