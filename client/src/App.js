@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './App.css';
 
 var DEFAULT_SIZE = 10;
@@ -44,6 +45,7 @@ class SizeInput extends React.Component {
 
 	handleChange(e) {
 		const val = e.target.value;
+		// eslint-disable-next-line
 		if (val == 0) {
 			this.props.onSizeChange("");
 		}
@@ -57,6 +59,7 @@ class SizeInput extends React.Component {
 	}
 
 	handleBlur(e) {
+		// eslint-disable-next-line
 		if (this.props.size == 0) {
 			this.props.onSizeChange(DEFAULT_SIZE);
 		}
@@ -106,10 +109,10 @@ class Space extends Component {
 			isOn: false,
 			bgColor: bg
 		};
-		this.handleClick = this.handleClick.bind(this);
+		this.handleMouseOver = this.handleMouseOver.bind(this);
 	}
 
-	handleClick() {
+	handleMouseOver() {
 		if (this.state.isOn) {
 			const bg = "rgb(" + Math.floor(this.props.iValue / this.props.size * 255) + ", " + Math.floor(this.props.jValue / this.props.size * 255) + ", 0)";
 			this.setState(state => ({
@@ -123,6 +126,10 @@ class Space extends Component {
 				bgColor: bg
 			}));
 		}
+
+		axios.get('http://localhost:5000/')
+		.then(result => this.setState(state => result.data))
+		.catch(error => console.error(error));
 	}
 
 	render() {
@@ -131,7 +138,7 @@ class Space extends Component {
 			width: 80/this.props.size + "vw",
 			height: 70/this.props.size + "vh"
 		};
-		return <td style={cStyle} onMouseOver={this.handleClick}></td>;
+		return <td style={cStyle} onMouseOver={this.handleMouseOver}></td>;
 	}
 }
 

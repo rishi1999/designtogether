@@ -1,14 +1,19 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
-const port = 3000;
-var powered;
+const port = 5000;
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
-	res.send('Hello World!');
-});
-
-app.post('/', (req, res) => {
-	res.send('Bye Bye World!');
+	res.send({
+		"bgColor": "rgb(30, 30, 30)"
+	});
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
