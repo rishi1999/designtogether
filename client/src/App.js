@@ -73,6 +73,56 @@ class SizeInput extends React.Component {
 }
 
 class Grid extends Component {
+	constructor(props) {
+		super(props);
+
+		const colorIndex = Math.floor(Math.random() * 3);
+		let penColor;
+		switch(colorIndex) {
+			case 0:
+			penColor = "rgb(255, 0, 0)";
+			break;
+			case 1:
+			penColor = "rgb(0, 255, 0)";
+			break;
+			case 2:
+			penColor = "rgb(0, 0, 255)";
+			break;
+			default:
+			penColor = "rgb(127, 127, 127)";
+		}
+
+		let grid = [];
+		for (let i = 0; i < this.props.size; i++) {
+			grid.push([]);
+			for (let j = 0; j < this.props.size; j++) {
+				grid[i].push("rgb(255, 255, 255)");
+			}
+		}
+
+		this.state = {
+			penColor: penColor,
+			colorArr: grid
+		};
+	}
+
+	componentDidMount() {
+		this.timerID = setInterval(
+			() => this.tick(),
+			100
+			);
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.timerID);
+	}
+
+	tick() {
+		axios.get('http://localhost:5000/')
+		.then(response => this.setState(response.data))
+		.catch(error => console.error(error));
+	}
+
 	render() {
 		return (
 			<table>
@@ -90,11 +140,10 @@ class Grid extends Component {
 			let children = [];
 
 			for (let j = 0; j < this.props.size; j++) {
-				console.log(this.props.size);
-				children.push(<Space key={i + "," + j + "," + this.props.size} iValue={i} jValue={j} size={this.props.size}/>);
+				children.push(<Space key={i + "," + j + "," + this.props.size} iValue={i} jValue={j} size={this.props.size} penColor={this.state.penColor} bgColor={(this.state.colorArr)[i][j]}/>);
 			}
 
-			table.push(<tr>{children}</tr>)
+			table.push(<tr key={i + "," + this.props.size}>{children}</tr>)
 		}
 
 		return table;
@@ -104,37 +153,25 @@ class Grid extends Component {
 class Space extends Component {
 	constructor(props) {
 		super(props);
-		const bg = "rgb(" + Math.floor(this.props.iValue / this.props.size * 255) + ", " + Math.floor(this.props.jValue / this.props.size * 255) + ", 0)";
-		this.state = {
-			isOn: false,
-			bgColor: bg
-		};
 		this.handleMouseOver = this.handleMouseOver.bind(this);
 	}
 
-	handleMouseOver() {
-		if (this.state.isOn) {
-			const bg = "rgb(" + Math.floor(this.props.iValue / this.props.size * 255) + ", " + Math.floor(this.props.jValue / this.props.size * 255) + ", 0)";
-			this.setState(state => ({
-				isOn: false,
-				bgColor: bg
-			}));
-		} else {
-			const bg = "rgb(" + (255 - Math.floor(this.props.iValue / this.props.size * 255)) + ", " + (255 - Math.floor(this.props.jValue / this.props.size * 255)) + ", 255)";
-			this.setState(state => ({
-				isOn: true,
-				bgColor: bg
-			}));
-		}
 
-		axios.get('http://localhost:5000/')
-		.then(result => this.setState(state => result.data))
+
+	handleMouseOver() {
+		axios.post('http://localhost:5000/space', {
+			iValue: this.props.iValue,
+			jValue: this.props.jValue,
+			size: this.props.size,
+			penColor: this.props.penColor
+		})
+		.then(response => console.log(response))
 		.catch(error => console.error(error));
 	}
 
 	render() {
 		const cStyle = {
-			backgroundColor: this.state.bgColor,
+			backgroundColor: this.props.bgColor,
 			width: 80/this.props.size + "vw",
 			height: 70/this.props.size + "vh"
 		};
