@@ -34,7 +34,7 @@ class App extends Component {
 	}
 }
 
-class SizeInput extends React.Component {
+class SizeInput extends React.Component { // TODO size changes aren't preserved on server. refreshing client resets size back to 10.
 	constructor(props) {
 		super(props);
 
@@ -118,7 +118,7 @@ class Grid extends Component {
 	}
 
 	tick() {
-		axios.get('http://localhost:5000/')
+		axios.get('http://localhost:5000/' /*'https://lazy-lion-18.localtunnel.me'*/)
 		.then(response => this.setState(response.data))
 		.catch(error => console.error(error));
 	}
@@ -159,7 +159,7 @@ class Space extends Component {
 
 
 	handleMouseOver() {
-		axios.post('http://localhost:5000/space', {
+		axios.post('http://localhost:5000/space' /*'https://lazy-lion-18.localtunnel.me/space'*/, {
 			iValue: this.props.iValue,
 			jValue: this.props.jValue,
 			size: this.props.size,
