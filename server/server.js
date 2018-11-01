@@ -1,19 +1,24 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const port = 5000;
 
-const corsOptions = {
-	origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-
 app.use(bodyParser.json());
-app.use(cors(corsOptions));
+app.use(cors());
 
 var grid = [];
-init(10); //needs to be set to DEFAULT_SIZE
+var size = 20;
+if (process.argv.length == 3) {
+	size = process.argv[2];
+}
+init();
+
+app.get('/size', (req, res) => {
+	res.send({
+		"size": size
+	});
+});
 
 app.get('/', (req, res) => {
 	res.send({
@@ -22,18 +27,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/space', (req, res) => {
-	if (req.body.size != grid.length) {
-		init(req.body.size);
-		res.send("grid size changed");
-	} else {
-		grid[req.body.iValue][req.body.jValue] = req.body.penColor;
-		res.send("(" + req.body.iValue + ", " + req.body.jValue + ") updated");
-	}
+	grid[req.body.iValue][req.body.jValue] = req.body.penColor;
+	res.send("(" + req.body.iValue + ", " + req.body.jValue + ") updated");
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
 
-function init(size) {
+function init() {
 	for (let i = 0; i < size; i++) {
 		grid.push([]);
 		for (let j = 0; j < size; j++) {

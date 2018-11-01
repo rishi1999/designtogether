@@ -21,17 +21,10 @@ input {
     color: #666666;
 }
 
-#size-input-section {
-    margin: 0px;
-    border: 0px;
-    padding: 0px;
-    height: 10vh;
-}
-
 #grid-section {
     margin: 0px;
     border: 0px;
     padding: 5vh 0px;
-    height: 75vh;
+    height: 85vh; /*75vh*/
     background-color: #eeeeee;
 }

@@ -1,73 +1,55 @@
 import React, { Component } from 'react';
+import ReactLoading from 'react-loading';
 import axios from 'axios';
 import './App.css';
-
-var DEFAULT_SIZE = 10;
-var MAX_SIZE = 25;
 
 class App extends Component {
 	constructor(props) {
 		super(props);
-		this.handleSizeChange = this.handleSizeChange.bind(this);
-		this.state = {size: DEFAULT_SIZE};
-	}
+		this.state = {
+			ready: false,
+			connectionAttempts: 0
+		};
 
-	handleSizeChange(val) {
-		this.setState(
-			{size: val}
+		const connect = () => {
+			axios.get('http://localhost:5000/size' /*'https://lazy-lion-18.localtunnel.me'*/)
+			.then(response => this.setState(response.data))
+			.catch(error => {
+				console.error(error);
+				this.setState({connectionAttempts: this.state.connectionAttempts + 1});
+				if (this.state.connectionAttempts < 3) {
+					connect();
+				}
+			});
+		};
+
+		connect();
+
+		setTimeout(
+			() => this.setState({ready: true}),
+			2500
 			);
 	}
 
 	render() {
+		let disp;
+
+		if (this.state.ready && this.state.size) {
+			disp = <Grid size={this.state.size}/>;
+		} else if (this.state.connectionAttempts < 3) {
+			disp = <ReactLoading type="bubbles" width="40%"/>;
+		} else {
+			disp = <p style={{fontSize:"2em", color:"rgb(255, 127, 127)"}}>-- failed to connect to server --</p>;
+		}
+
 		return (
 			<div className="App">
 			<center>
-			<section id="size-input-section">
-			<SizeInput size={this.state.size} onSizeChange={this.handleSizeChange}/>
-			</section>
 			<section id="grid-section">
-			<Grid size={this.state.size}/>
+			{disp}
 			</section>
 			</center>
 			</div>
-			);
-	}
-}
-
-class SizeInput extends React.Component { // TODO size changes aren't preserved on server. refreshing client resets size back to 10.
-	constructor(props) {
-		super(props);
-
-		this.handleChange = this.handleChange.bind(this);
-		this.handleFocus = this.handleFocus.bind(this);
-		this.handleBlur = this.handleBlur.bind(this);
-	}
-
-	handleChange(e) {
-		const val = e.target.value;
-		// eslint-disable-next-line
-		if (val == 0) {
-			this.props.onSizeChange("");
-		}
-		else if (!(isNaN(val))) {
-			this.props.onSizeChange(Math.min(val, MAX_SIZE));
-		}
-	}
-
-	handleFocus(e) {
-		this.props.onSizeChange("");
-	}
-
-	handleBlur(e) {
-		// eslint-disable-next-line
-		if (this.props.size == 0) {
-			this.props.onSizeChange(DEFAULT_SIZE);
-		}
-	}
-
-	render() {
-		return (
-			<input type="text" value={this.props.size} onChange={this.handleChange} onFocus={this.handleFocus} onBlur={this.handleBlur} />
 			);
 	}
 }
