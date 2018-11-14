@@ -58,6 +58,7 @@ class Grid extends Component {
 	constructor(props) {
 		super(props);
 
+		// chooses random pen color for user
 		const colorIndex = Math.floor(Math.random() * 3);
 		let penColor;
 		switch(colorIndex) {
@@ -74,6 +75,7 @@ class Grid extends Component {
 			penColor = "rgb(127, 127, 127)";
 		}
 
+		// initializes client-side grid to all white
 		let grid = [];
 		for (let i = 0; i < this.props.size; i++) {
 			grid.push([]);
@@ -137,8 +139,6 @@ class Space extends Component {
 		super(props);
 		this.handleMouseOver = this.handleMouseOver.bind(this);
 	}
-
-
 
 	handleMouseOver() {
 		axios.post('http://localhost:5000/space' /*'https://lazy-lion-18.localtunnel.me/space'*/, {
