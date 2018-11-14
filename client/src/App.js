@@ -48,6 +48,7 @@ class App extends Component {
 			<section id="grid-section">
 			{disp}
 			</section>
+			<Palette/>
 			</center>
 			</div>
 			);
@@ -158,6 +159,25 @@ class Space extends Component {
 			height: 70/this.props.size + "vh"
 		};
 		return <td style={cStyle} onMouseOver={this.handleMouseOver}></td>;
+	}
+}
+
+class Palette extends Component {
+	constructor(props) {
+		super(props);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+	}
+
+	handleKeyPress(e) {
+		e.preventDefault();
+		if (e.key === "Enter") {
+			alert('hi');
+			// TODO do color changing stuff here
+		}
+	}
+
+	render() {
+		return <input type="text" onKeyPress={this.handleKeyPress}/>;
 	}
 }
 
