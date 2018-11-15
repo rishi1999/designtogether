@@ -14,7 +14,7 @@ class App extends Component {
 		};
 
 		const connect = () => {
-			axios.get(/*'http://localhost:5000/size'*/ 'https://nicolewang.localtunnel.me')
+			axios.get(/*'http://localhost:5000/size'*/ 'https://nicolewang.localtunnel.me/size')
 			.then(response => this.setState(response.data))
 			.catch(error => {
 				console.error(error);
@@ -130,7 +130,7 @@ class Space extends Component {
 	}
 
 	handleMouseOver() {
-		axios.post(/*'http://localhost:5000/space'*/ 'nicolewang.localtunnel.me/space', {
+		axios.post(/*'http://localhost:5000/space'*/ 'https://nicolewang.localtunnel.me/space', {
 			iValue: this.props.iValue,
 			jValue: this.props.jValue,
 			size: this.props.size,
