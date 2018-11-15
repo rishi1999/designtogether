@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const YAML = require('yamljs');
+const ngrok = require('ngrok');
 const app = express();
 const port = 5000;
 
@@ -13,6 +15,21 @@ if (process.argv.length == 3) {
 	size = process.argv[2];
 }
 init();
+
+
+const ngrokConfigs = YAML.load('/home/rishi/.ngrok2/ngrok.yml');
+
+(async () => {
+	try {
+		await ngrok.authtoken(ngrokConfigs.authtoken);
+		const url = await ngrok.connect(port);
+		console.log(`Server live at ${url} using ngrok.`);
+	} catch (err) {
+		console.error('ERROR: Server failed to connect to ngrok!');
+		console.error(err);
+	}
+})();
+
 
 app.get('/size', (req, res) => {
 	res.send({
@@ -31,7 +48,7 @@ app.post('/space', (req, res) => {
 	res.send("(" + req.body.iValue + ", " + req.body.jValue + ") updated");
 });
 
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+app.listen(port, () => console.log(`Server listening on port ${port}.`));
 
 function init() {
 	for (let i = 0; i < size; i++) {

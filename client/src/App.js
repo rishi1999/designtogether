@@ -3,6 +3,8 @@ import ReactLoading from 'react-loading';
 import axios from 'axios';
 import './App.css';
 
+var serverURL = 'https://052b6518.ngrok.io'; /* http://localhost:5000 */
+
 class App extends Component {
 	constructor(props) {
 		super(props);
@@ -14,7 +16,7 @@ class App extends Component {
 		};
 
 		const connect = () => {
-			axios.get(/*'http://localhost:5000/size'*/ 'https://nicolewang.localtunnel.me/size')
+			axios.get(serverURL + '/size')
 			.then(response => this.setState(response.data))
 			.catch(error => {
 				console.error(error);
@@ -91,7 +93,7 @@ class Grid extends Component {
 	}
 
 	tick() {
-		axios.get(/*'http://localhost:5000/'*/ 'https://nicolewang.localtunnel.me')
+		axios.get(serverURL)
 		.then(response => this.setState(response.data))
 		.catch(error => console.error(error));
 	}
@@ -130,7 +132,7 @@ class Space extends Component {
 	}
 
 	handleMouseOver() {
-		axios.post(/*'http://localhost:5000/space'*/ 'https://nicolewang.localtunnel.me/space', {
+		axios.post(serverURL + '/space', {
 			iValue: this.props.iValue,
 			jValue: this.props.jValue,
 			size: this.props.size,
