@@ -6,13 +6,15 @@ import './App.css';
 class App extends Component {
 	constructor(props) {
 		super(props);
+		this.handlePenColorChange = this.handlePenColorChange.bind(this);
 		this.state = {
 			ready: false,
-			connectionAttempts: 0
+			connectionAttempts: 0,
+			penColor: "black"
 		};
 
 		const connect = () => {
-			axios.get('http://localhost:5000/size' /*'https://lazy-lion-18.localtunnel.me'*/)
+			axios.get(/*'http://localhost:5000/size'*/ 'https://nicolewang.localtunnel.me')
 			.then(response => this.setState(response.data))
 			.catch(error => {
 				console.error(error);
@@ -31,15 +33,19 @@ class App extends Component {
 			);
 	}
 
+	handlePenColorChange(penColor) {
+		this.setState({penColor: penColor});
+	}
+
 	render() {
 		let disp;
 
 		if (this.state.ready && this.state.size) {
-			disp = <Grid size={this.state.size}/>;
+			disp = <Grid size={this.state.size} penColor={this.state.penColor}/>;
 		} else if (this.state.connectionAttempts < 3) {
 			disp = <ReactLoading type="bubbles" width="40%"/>;
 		} else {
-			disp = <p style={{fontSize:"2em", color:"rgb(255, 127, 127)"}}>-- failed to connect to server --</p>;
+			disp = <p style={{fontSize:"2em", color:"#ff7f7f"}}>-- failed to connect to server --</p>;
 		}
 
 		return (
@@ -48,7 +54,7 @@ class App extends Component {
 			<section id="grid-section">
 			{disp}
 			</section>
-			<Palette/>
+			<Palette onPenColorChange={this.handlePenColorChange}/>
 			</center>
 			</div>
 			);
@@ -59,34 +65,16 @@ class Grid extends Component {
 	constructor(props) {
 		super(props);
 
-		// chooses random pen color for user
-		const colorIndex = Math.floor(Math.random() * 3);
-		let penColor;
-		switch(colorIndex) {
-			case 0:
-			penColor = "rgb(255, 0, 0)";
-			break;
-			case 1:
-			penColor = "rgb(0, 255, 0)";
-			break;
-			case 2:
-			penColor = "rgb(0, 0, 255)";
-			break;
-			default:
-			penColor = "rgb(127, 127, 127)";
-		}
-
 		// initializes client-side grid to all white
 		let grid = [];
 		for (let i = 0; i < this.props.size; i++) {
 			grid.push([]);
 			for (let j = 0; j < this.props.size; j++) {
-				grid[i].push("rgb(255, 255, 255)");
+				grid[i].push("#ffffff");
 			}
 		}
 
 		this.state = {
-			penColor: penColor,
 			colorArr: grid
 		};
 	}
@@ -103,7 +91,7 @@ class Grid extends Component {
 	}
 
 	tick() {
-		axios.get('http://localhost:5000/' /*'https://lazy-lion-18.localtunnel.me'*/)
+		axios.get(/*'http://localhost:5000/'*/ 'https://nicolewang.localtunnel.me')
 		.then(response => this.setState(response.data))
 		.catch(error => console.error(error));
 	}
@@ -125,7 +113,7 @@ class Grid extends Component {
 			let children = [];
 
 			for (let j = 0; j < this.props.size; j++) {
-				children.push(<Space key={i + "," + j + "," + this.props.size} iValue={i} jValue={j} size={this.props.size} penColor={this.state.penColor} bgColor={(this.state.colorArr)[i][j]}/>);
+				children.push(<Space key={i + "," + j + "," + this.props.size} iValue={i} jValue={j} size={this.props.size} penColor={this.props.penColor} bgColor={(this.state.colorArr)[i][j]}/>);
 			}
 
 			table.push(<tr key={i + "," + this.props.size}>{children}</tr>)
@@ -142,13 +130,13 @@ class Space extends Component {
 	}
 
 	handleMouseOver() {
-		axios.post('http://localhost:5000/space' /*'https://lazy-lion-18.localtunnel.me/space'*/, {
+		axios.post(/*'http://localhost:5000/space'*/ 'nicolewang.localtunnel.me/space', {
 			iValue: this.props.iValue,
 			jValue: this.props.jValue,
 			size: this.props.size,
 			penColor: this.props.penColor
 		})
-		.then(response => console.log(response))
+		.then(response => {} /*console.log(response)*/)
 		.catch(error => console.error(error));
 	}
 
@@ -165,14 +153,24 @@ class Space extends Component {
 class Palette extends Component {
 	constructor(props) {
 		super(props);
+		this.validateColor = this.validateColor.bind(this);
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 	}
 
+	validateColor(str) {
+		if (str === "") { return false; }
+		if (str === "black") { return true; }
+		const image = document.createElement("img");
+		image.style.color = "black";
+		image.style.color = str;
+		return image.style.color !== "black";
+		document.removeChild(image);
+	}
+
 	handleKeyPress(e) {
-		e.preventDefault();
-		if (e.key === "Enter") {
-			alert('hi');
-			// TODO do color changing stuff here
+		if (e.key === "Enter" && this.validateColor(e.target.value)) {
+			this.props.onPenColorChange(e.target.value);
+			e.target.value = "";
 		}
 	}
 

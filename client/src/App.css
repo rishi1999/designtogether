@@ -10,21 +10,20 @@ td {
 }
 
 input {
-    border-radius: 1.5em;
-    /*border: 0.1em solid #888888;*/
-    padding: 0.25em; 
-    width: 1.5em;
-    height: 1.5em;
+    margin: 0.25em;
+    border: 0.1em solid #AAAAAA;
+    padding: 0.25em;
+    width: 5em;
     outline: none;
     font-size: 3vw;
     text-align: center;
-    color: #666666;
+    color: #AAAAAA;
 }
 
 #grid-section {
     margin: 0px;
     border: 0px;
     padding: 5vh 0px;
-    height: 85vh; /*75vh*/
+    height: 70vh;
     background-color: #eeeeee;
 }
