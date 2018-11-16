@@ -63,10 +63,10 @@ class App extends Component {
 		return (
 			<div className="App">
 			<center>
-			<section id="grid-section">
+			<section id="gridSection">
 			{disp}
 			</section>
-			<Palette onPenColorChange={this.handlePenColorChange}/>
+			<Palette penColor={this.state.penColor} onPenColorChange={this.handlePenColorChange}/>
 			</center>
 			</div>
 			);
@@ -212,7 +212,12 @@ class Palette extends Component {
 	}
 
 	render() {
-		return <input type="text" onKeyPress={this.handleKeyPress}/>;
+		return (
+			<React.Fragment>
+			<input id="paletteInput" type="text" onKeyPress={this.handleKeyPress}/>
+			<span class="dot" style={{backgroundColor: this.props.penColor}}/>
+			</React.Fragment>
+			);
 	}
 }
 
