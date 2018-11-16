@@ -3,18 +3,22 @@ import ReactLoading from 'react-loading';
 import axios from 'axios';
 import './App.css';
 
-var serverURL = 'https://052b6518.ngrok.io'; /* http://localhost:5000 */
+var serverURL = ""; /* http://localhost:5000 */
 
 class App extends Component {
 	constructor(props) {
 		super(props);
+		this.init = this.init.bind(this);
+		this.reset = this.reset.bind(this);
 		this.handlePenColorChange = this.handlePenColorChange.bind(this);
 		this.state = {
 			ready: false,
 			connectionAttempts: 0,
 			penColor: "black"
 		};
+	}
 
+	init() {
 		const connect = () => {
 			axios.get(serverURL + '/size')
 			.then(response => this.setState(response.data))
@@ -35,6 +39,10 @@ class App extends Component {
 			);
 	}
 
+	reset() {
+		this.setState({ready: false, connectionAttempts: 0}, this.init);
+	}
+
 	handlePenColorChange(penColor) {
 		this.setState({penColor: penColor});
 	}
@@ -42,8 +50,10 @@ class App extends Component {
 	render() {
 		let disp;
 
-		if (this.state.ready && this.state.size) {
-			disp = <Grid size={this.state.size} penColor={this.state.penColor}/>;
+		if (serverURL === "") {
+			disp = <ServerInput onServerSubmission={this.init}/>;
+		} else if (this.state.ready && this.state.size) {
+			disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
 		} else if (this.state.connectionAttempts < 3) {
 			disp = <ReactLoading type="bubbles" width="40%"/>;
 		} else {
@@ -63,9 +73,29 @@ class App extends Component {
 	}
 }
 
+class ServerInput extends Component {
+	constructor(props) {
+		super(props);
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+	}
+
+	handleKeyPress(e) {
+		if (e.key === "Enter") {
+			serverURL = e.target.value;
+			this.props.onServerSubmission();
+		}
+	}
+
+	render() {
+		return <input type="text" onKeyPress={this.handleKeyPress}/>;
+	}
+}
+
 class Grid extends Component {
 	constructor(props) {
 		super(props);
+
+		this.resetAttempted = false;
 
 		// initializes client-side grid to all white
 		let grid = [];
@@ -95,7 +125,12 @@ class Grid extends Component {
 	tick() {
 		axios.get(serverURL)
 		.then(response => this.setState(response.data))
-		.catch(error => console.error(error));
+		.catch(error => {
+			if (!this.resetAttempted) {
+				this.resetAttempted = true;
+				this.props.serverDownResponse();
+			}
+		});
 	}
 
 	render() {
