@@ -66,10 +66,12 @@ class App extends Component {
 			<section id="gridSection">
 			{disp}
 			</section>
+			{serverURL !== "" &&
 			<Palette penColor={this.state.penColor} onPenColorChange={this.handlePenColorChange}/>
-			</center>
-			</div>
-			);
+		}
+		</center>
+		</div>
+		);
 	}
 }
 
@@ -87,15 +89,18 @@ class ServerInput extends Component {
 	}
 
 	render() {
-		return <input type="text" onKeyPress={this.handleKeyPress}/>;
+		return (
+			<React.Fragment>
+			<p style={{fontSize: "4vw"}}>Enter server URL:</p>
+			<input id="serverInput" type="text" onKeyPress={this.handleKeyPress}/>
+			</React.Fragment>
+			);
 	}
 }
 
 class Grid extends Component {
 	constructor(props) {
 		super(props);
-
-		this.resetAttempted = false;
 
 		// initializes client-side grid to all white
 		let grid = [];
@@ -126,8 +131,9 @@ class Grid extends Component {
 		axios.get(serverURL)
 		.then(response => this.setState(response.data))
 		.catch(error => {
-			if (!this.resetAttempted) {
-				this.resetAttempted = true;
+			if (this.timerID !== null) {
+				clearInterval(this.timerID);
+				this.timerID = null;
 				this.props.serverDownResponse();
 			}
 		});
@@ -174,7 +180,7 @@ class Space extends Component {
 			penColor: this.props.penColor
 		})
 		.then(response => {} /*console.log(response)*/)
-		.catch(error => console.error(error));
+		.catch(error => {} /*console.error(error)*/);
 	}
 
 	render() {
@@ -197,11 +203,13 @@ class Palette extends Component {
 	validateColor(str) {
 		if (str === "") { return false; }
 		if (str === "black") { return true; }
+		let returnVal;
 		const image = document.createElement("img");
 		image.style.color = "black";
 		image.style.color = str;
-		return image.style.color !== "black";
-		document.removeChild(image);
+		returnVal = image.style.color !== "black";
+		// image.parentNode.removeChild(image);
+		return returnVal;
 	}
 
 	handleKeyPress(e) {
@@ -215,7 +223,7 @@ class Palette extends Component {
 		return (
 			<React.Fragment>
 			<input id="paletteInput" type="text" onKeyPress={this.handleKeyPress}/>
-			<span class="dot" style={{backgroundColor: this.props.penColor}}/>
+			<span className="dot" style={{backgroundColor: this.props.penColor}}/>
 			</React.Fragment>
 			);
 	}

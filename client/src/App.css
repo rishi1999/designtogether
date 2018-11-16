@@ -1,3 +1,7 @@
+p {
+    font-family: Verdana, Geneva, sans-serif;
+}
+
 table {
     border-collapse: collapse;
 }
@@ -9,15 +13,12 @@ td {
 
 }
 
-#paletteInput {
-    margin: 0.25em;
-    border: 0.1em solid #AAAAAA;
-    padding: 0.25em;
-    width: 5em;
-    outline: none;
-    font-size: 3vw;
+#serverInput {
+    width: 90vw;
+    height: 20vh;
+    font-size: 6vw;
     text-align: center;
-    color: #AAAAAA;
+    color: #000000;
 }
 
 #gridSection {
@@ -26,6 +27,17 @@ td {
     padding: 5vh 0px;
     height: 70vh;
     background-color: #eeeeee;
+}
+
+#paletteInput {
+    margin: 0.25em;
+    border: 0.1em solid #aaaaaa;
+    padding: 0.25em;
+    width: 5em;
+    outline: none;
+    font-size: 3vw;
+    text-align: center;
+    color: #aaaaaa;
 }
 
 .dot {
