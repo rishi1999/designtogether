@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const YAML = require('yamljs');
 const ngrok = require('ngrok');
 const app = express();
 const port = 5000;
@@ -16,12 +15,8 @@ if (process.argv.length == 3) {
 }
 init();
 
-
-const ngrokConfigs = YAML.load('/home/rishi/.ngrok2/ngrok.yml');
-
 (async () => {
 	try {
-		await ngrok.authtoken(ngrokConfigs.authtoken);
 		const url = await ngrok.connect(port);
 		console.log(`Server live at ${url} using ngrok.`);
 	} catch (err) {
