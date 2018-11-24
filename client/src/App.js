@@ -3,7 +3,8 @@ import ReactLoading from 'react-loading';
 import axios from 'axios';
 import './App.css';
 
-var serverURL = ""; /* http://localhost:5000 */
+var serverURL = "";
+var resetAttempted = false;
 
 class App extends Component {
 	constructor(props) {
@@ -23,7 +24,6 @@ class App extends Component {
 			axios.get(serverURL + '/size')
 			.then(response => this.setState(response.data))
 			.catch(error => {
-				console.error(error);
 				this.setState({connectionAttempts: this.state.connectionAttempts + 1});
 				if (this.state.connectionAttempts < 3) {
 					connect();
@@ -33,14 +33,11 @@ class App extends Component {
 
 		connect();
 
-		setTimeout(
-			() => this.setState({ready: true}),
-			2500
-			);
+		setTimeout(() => this.setState({ready: true}), 2500);
 	}
 
 	reset() {
-		this.setState({ready: false, connectionAttempts: 0}, this.init);
+		this.setState({ready: false, connectionAttempts: 0, size: null}, this.init);
 	}
 
 	handlePenColorChange(penColor) {
@@ -53,11 +50,12 @@ class App extends Component {
 		if (serverURL === "") {
 			disp = <ServerInput onServerSubmission={this.init}/>;
 		} else if (this.state.ready && this.state.size) {
+			resetAttempted = false;
 			disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
-		} else if (this.state.connectionAttempts < 3) {
-			disp = <ReactLoading type="bubbles" width="40%"/>;
+		} else if (this.state.ready && this.state.connectionAttempts > 2) {
+			disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server error --</p>;
 		} else {
-			disp = <p style={{fontSize:"2em", color:"#ff7f7f"}}>-- failed to connect to server --</p>;
+			disp = <ReactLoading type="bubbles" width="40%"/>;
 		}
 
 		return (
@@ -131,9 +129,8 @@ class Grid extends Component {
 		axios.get(serverURL)
 		.then(response => this.setState(response.data))
 		.catch(error => {
-			if (this.timerID !== null) {
-				clearInterval(this.timerID);
-				this.timerID = null;
+			if (!resetAttempted) {
+				resetAttempted = true;
 				this.props.serverDownResponse();
 			}
 		});
@@ -179,8 +176,6 @@ class Space extends Component {
 			size: this.props.size,
 			penColor: this.props.penColor
 		})
-		.then(response => {} /*console.log(response)*/)
-		.catch(error => {} /*console.error(error)*/);
 	}
 
 	render() {
@@ -208,7 +203,6 @@ class Palette extends Component {
 		image.style.color = "black";
 		image.style.color = str;
 		returnVal = image.style.color !== "black";
-		// image.parentNode.removeChild(image);
 		return returnVal;
 	}
 
