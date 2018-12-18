@@ -15,8 +15,11 @@ class App extends Component {
 		this.state = {
 			ready: false,
 			connectionAttempts: 0,
-			penColor: "black"
+			penColor: "black",
+			onSplash: true
 		};
+
+		setTimeout(() => this.setState({onSplash: false}), 2000);
 	}
 
 	init() {
@@ -45,31 +48,35 @@ class App extends Component {
 	}
 
 	render() {
-		let disp;
-
-		if (serverURL === "") {
-			disp = <ServerInput onServerSubmission={this.init}/>;
-		} else if (this.state.ready && this.state.size) {
-			resetAttempted = false;
-			disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
-		} else if (this.state.ready && this.state.connectionAttempts > 2) {
-			disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server error --</p>;
+		if (this.state.onSplash) {
+			return <h1>designtogether</h1>;
 		} else {
-			disp = <ReactLoading type="bubbles" width="40%"/>;
-		}
+			let disp;
 
-		return (
-			<div className="App">
-			<center>
-			<section id="gridSection">
-			{disp}
-			</section>
-			{serverURL !== "" &&
-			<Palette penColor={this.state.penColor} onPenColorChange={this.handlePenColorChange}/>
+			if (serverURL === "") {
+				disp = <ServerInput onServerSubmission={this.init}/>;
+			} else if (this.state.ready && this.state.size) {
+				resetAttempted = false;
+				disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
+			} else if (this.state.ready && this.state.connectionAttempts > 2) {
+				disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server error --</p>;
+			} else {
+				disp = <ReactLoading type="bubbles" width="40%"/>;
+			}
+
+			return (
+				<div className="App">
+				<center>
+				<section id="gridSection">
+				{disp}
+				</section>
+				{serverURL !== "" &&
+				<Palette penColor={this.state.penColor} onPenColorChange={this.handlePenColorChange}/>
+			}
+			</center>
+			</div>
+			);
 		}
-		</center>
-		</div>
-		);
 	}
 }
 
