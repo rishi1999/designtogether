@@ -8,6 +8,7 @@ var serverURL = "";
 var socket;
 var connectionFailed = false;
 
+
 class App extends Component {
 	constructor(props) {
 		super(props);

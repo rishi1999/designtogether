@@ -58,7 +58,7 @@ io.on('connection', client => {
     	console.log('a user left the room');
   	});
 
-	client.join('default room');
+	//client.join('default room');
 
 	client.on('size', () => {
 		client.emit('size', {
