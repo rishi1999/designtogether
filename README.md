@@ -2,7 +2,7 @@
 
 designtogether is a collaborative drawing app.
 
-Anyone can download the source code to set up a server, and create a blank canvas. Anyone with the link to the server can start drawing on the canvas in real time.
+Anyone can download the source code to set up a server and create a blank canvas. Anyone with the link to the server can start drawing on the canvas in real time.
   
 ## Installation
 
