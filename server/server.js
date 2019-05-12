@@ -1,19 +1,35 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
 const ngrok = require('ngrok');
-const app = express();
 const port = 5000;
 
-app.use(bodyParser.json());
-app.use(cors());
+//const bodyParser = require('body-parser');
+const cors = require('cors');
+
+app.use(cors);
+
+// grid setup
 
 var grid = [];
 var size = 20;
+
 if (process.argv.length == 3) {
 	size = process.argv[2];
 }
-init();
+
+for (let i = 0; i < size; i++) {
+	grid.push([]);
+	for (let j = 0; j < size; j++) {
+		grid[i].push("rgb(255, 255, 255)");
+	}
+}
+
+
+// server setup
+
+http.listen(port, () => console.log(`Server listening on port ${port}.`));
 
 (async () => {
 	try {
@@ -26,30 +42,30 @@ init();
 })();
 
 
-app.get('/size', (req, res) => {
-	res.send({
-		"size": size
-	});
-});
+// client interaction
 
-app.get('/', (req, res) => {
-	res.send({
+setInterval(() => {
+	io.emit('grid', {
 		"colorArr": grid
 	});
+}, 1000);
+
+io.on('connection', client => {
+	console.log('a user connected');
+
+	client.on('disconnect', () => {
+    	console.log('user disconnected');
+  	});
+
+	client.join('default room');
+
+	client.on('size', () => {
+		client.emit('size', {
+			"size": size
+		});
+	});
+
+	client.on('space', st => {
+		grid[st.iValue][st.jValue] = st.penColor;
+	})
 });
-
-app.post('/space', (req, res) => {
-	grid[req.body.iValue][req.body.jValue] = req.body.penColor;
-	res.send("(" + req.body.iValue + ", " + req.body.jValue + ") updated");
-});
-
-app.listen(port, () => console.log(`Server listening on port ${port}.`));
-
-function init() {
-	for (let i = 0; i < size; i++) {
-		grid.push([]);
-		for (let j = 0; j < size; j++) {
-			grid[i].push("rgb(255, 255, 255)");
-		}
-	}
-}

@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import ReactLoading from 'react-loading';
-import axios from 'axios';
+import openSocket from 'socket.io-client';
 import './App.css';
 
+
 var serverURL = "";
-var resetAttempted = false;
+var socket;
 
 class App extends Component {
 	constructor(props) {
 		super(props);
+
 		this.init = this.init.bind(this);
 		this.reset = this.reset.bind(this);
 		this.handlePenColorChange = this.handlePenColorChange.bind(this);
+
 		this.state = {
 			ready: false,
 			connectionAttempts: 0,
@@ -19,28 +22,21 @@ class App extends Component {
 			onSplash: true
 		};
 
-		setTimeout(() => this.setState({onSplash: false}), 2000);
+		
+
+		setTimeout(() => this.setState({onSplash: false}), 3000);
 	}
 
 	init() {
-		const connect = () => {
-			axios.get(serverURL + '/size')
-			.then(response => this.setState(response.data))
-			.catch(error => {
-				this.setState({connectionAttempts: this.state.connectionAttempts + 1});
-				if (this.state.connectionAttempts < 3) {
-					connect();
-				}
-			});
-		};
-
-		connect();
+		socket = openSocket(serverURL);
+		socket.emit('size');
+		socket.on('size', st => this.setState(st));
 
 		setTimeout(() => this.setState({ready: true}), 2500);
 	}
 
 	reset() {
-		this.setState({ready: false, connectionAttempts: 0, size: null}, this.init);
+		this.setState({ready: false, size: null}, this.init);
 	}
 
 	handlePenColorChange(penColor) {
@@ -56,9 +52,8 @@ class App extends Component {
 			if (serverURL === "") {
 				disp = <ServerInput onServerSubmission={this.init}/>;
 			} else if (this.state.ready && this.state.size) {
-				resetAttempted = false;
 				disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
-			} else if (this.state.ready && this.state.connectionAttempts > 2) {
+			} else if (this.state.ready && false) {
 				disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server error --</p>;
 			} else {
 				disp = <ReactLoading type="bubbles" width="40%"/>;
@@ -107,6 +102,8 @@ class Grid extends Component {
 	constructor(props) {
 		super(props);
 
+		socket.on('grid', st => this.setState(st));
+
 		// initializes client-side grid to all white
 		let grid = [];
 		for (let i = 0; i < this.props.size; i++) {
@@ -119,28 +116,6 @@ class Grid extends Component {
 		this.state = {
 			colorArr: grid
 		};
-	}
-
-	componentDidMount() {
-		this.timerID = setInterval(
-			() => this.tick(),
-			100
-			);
-	}
-
-	componentWillUnmount() {
-		clearInterval(this.timerID);
-	}
-
-	tick() {
-		axios.get(serverURL)
-		.then(response => this.setState(response.data))
-		.catch(error => {
-			if (!resetAttempted) {
-				resetAttempted = true;
-				this.props.serverDownResponse();
-			}
-		});
 	}
 
 	render() {
@@ -177,12 +152,11 @@ class Space extends Component {
 	}
 
 	handleMouseOver() {
-		axios.post(serverURL + '/space', {
+		socket.emit('space', {
 			iValue: this.props.iValue,
 			jValue: this.props.jValue,
-			size: this.props.size,
 			penColor: this.props.penColor
-		})
+		});
 	}
 
 	render() {
