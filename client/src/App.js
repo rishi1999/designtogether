@@ -6,42 +6,53 @@ import './App.css';
 
 var serverURL = "";
 var socket;
+var connectionFailed = false;
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 
 		this.init = this.init.bind(this);
-		this.reset = this.reset.bind(this);
 		this.handlePenColorChange = this.handlePenColorChange.bind(this);
 
 		this.state = {
 			ready: false,
-			connectionAttempts: 0,
 			penColor: "black",
 			onSplash: true
 		};
 
-		
-
-		setTimeout(() => this.setState({onSplash: false}), 3000);
+		setTimeout(() => this.setState({onSplash: false}), 2000);
 	}
 
 	init() {
 		socket = openSocket(serverURL);
 
-		/*socket.on('error', error => {
-		  // ...
-		});*/
+		socket.on('connect_error', error => {
+		  connectionFailed = true;
+		});
+
+		socket.on('connect_timeout', timeout => {
+		  connectionFailed = true;
+		});
+
+		socket.on('error', error => {
+		  connectionFailed = true;
+		});
+
+		socket.on('disconnect', (reason) => {
+		  if (reason === 'io server disconnect') {
+		    socket.connect();
+		  }
+		});
+
+		socket.on('reconnect', (attemptNumber) => {
+		  connectionFailed = false;
+		});
 
 		socket.emit('size');
 		socket.on('size', st => this.setState(st));
 
 		setTimeout(() => this.setState({ready: true}), 2500);
-	}
-
-	reset() {
-		this.setState({ready: false, size: null}, this.init);
 	}
 
 	handlePenColorChange(penColor) {
@@ -57,9 +68,9 @@ class App extends Component {
 			if (serverURL === "") {
 				disp = <ServerInput onServerSubmission={this.init}/>;
 			} else if (this.state.ready && this.state.size) {
-				disp = <Grid size={this.state.size} penColor={this.state.penColor} serverDownResponse={this.reset}/>;
-			} else if (this.state.ready && false) {
-				disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server error --</p>;
+				disp = <Grid size={this.state.size} penColor={this.state.penColor}/>;
+			} else if (connectionFailed) {
+				disp = <p style={{fontSize:"2em", color:"#ff6060"}}>-- server offline --</p>;
 			} else {
 				disp = <ReactLoading type="bubbles" width="40%"/>;
 			}
