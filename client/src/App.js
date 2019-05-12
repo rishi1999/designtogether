@@ -29,6 +29,11 @@ class App extends Component {
 
 	init() {
 		socket = openSocket(serverURL);
+
+		/*socket.on('error', error => {
+		  // ...
+		});*/
+
 		socket.emit('size');
 		socket.on('size', st => this.setState(st));
 
@@ -160,12 +165,22 @@ class Space extends Component {
 	}
 
 	render() {
-		const cStyle = {
-			backgroundColor: this.props.bgColor,
-			width: 80/this.props.size + "vw",
-			height: 70/this.props.size + "vh"
+		const len = 70/this.props.size + "vmin";
+
+		const tdStyle = {
+			width: len,
+			height: len
 		};
-		return <td style={cStyle} onMouseOver={this.handleMouseOver}></td>;
+
+		const spaceStyle = {
+			display: "inline-block",
+			backgroundColor: this.props.bgColor,
+			width: "100%",
+			height: "100%",
+			borderRadius: "50%"
+		};
+
+		return <td style={tdStyle}><span style={spaceStyle} onMouseOver={this.handleMouseOver}/></td>;
 	}
 }
 
@@ -198,7 +213,7 @@ class Palette extends Component {
 		return (
 			<React.Fragment>
 			<input id="paletteInput" type="text" onKeyPress={this.handleKeyPress}/>
-			<span className="dot" style={{backgroundColor: this.props.penColor}}/>
+			<span className="palette" style={{backgroundColor: this.props.penColor}}/>
 			</React.Fragment>
 			);
 	}

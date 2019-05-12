@@ -1,3 +1,5 @@
+// load dependencies
+
 const app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -5,10 +7,9 @@ var io = require('socket.io')(http);
 const ngrok = require('ngrok');
 const port = 5000;
 
-//const bodyParser = require('body-parser');
 const cors = require('cors');
-
 app.use(cors);
+
 
 // grid setup
 
@@ -34,7 +35,7 @@ http.listen(port, () => console.log(`Server listening on port ${port}.`));
 (async () => {
 	try {
 		const url = await ngrok.connect(port);
-		console.log(`Server live at ${url} using ngrok.`);
+		console.log(`Server live at ${url}.`);
 	} catch (err) {
 		console.error('ERROR: Server failed to connect to ngrok!');
 		console.error(err);
@@ -48,13 +49,13 @@ setInterval(() => {
 	io.emit('grid', {
 		"colorArr": grid
 	});
-}, 1000);
+}, 200);
 
 io.on('connection', client => {
-	console.log('a user connected');
+	console.log('a user joined the room');
 
 	client.on('disconnect', () => {
-    	console.log('user disconnected');
+    	console.log('a user left the room');
   	});
 
 	client.join('default room');
