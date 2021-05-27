@@ -1,3 +1,7 @@
+*This repository is no longer maintained. The latest release (v2.0) should still be functional.*
+
+---
+
 # designtogether
 
 designtogether is a collaborative drawing app.
